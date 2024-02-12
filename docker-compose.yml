@@ -1,0 +1,8 @@
+﻿version: '0.1'
+services:
+  dotnet_core_boilerplate:
+    image: dotnet_core_boilerplate
+    build: .
+    ports: 
+      - 8080:80
+  

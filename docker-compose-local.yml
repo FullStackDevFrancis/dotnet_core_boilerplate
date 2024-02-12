@@ -1,0 +1,14 @@
+﻿services:
+  dotnet_core_boilerplate:
+    image: dotnet_core_boilerplate
+    build: 
+        context: .
+        dockerfile: Dockerfile-local
+    ports: 
+      - 8080:80
+    volumes:
+      - .:/app
+    environment:
+      - DOTNET_USE_POLLING_FILE_WATCHER=1
+    entrypoint: ["dotnet", "watch", "run","--project", "/app/dotnet_core_boilerplate.csproj", "--urls", "http://+:80"]
+  

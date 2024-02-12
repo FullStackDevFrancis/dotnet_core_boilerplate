@@ -1,0 +1,27 @@
+﻿# Use the official SDK image to build and watch for changes
+FROM mcr.microsoft.com/dotnet/sdk:7.0 AS build-env
+WORKDIR "./"
+
+# Copy csproj and restore as distinct layers
+COPY ["dotnet_core_boilerplate.csproj", "dotnet_core_boilerplate/"]
+RUN dotnet restore "dotnet_core_boilerplate/dotnet_core_boilerplate.csproj"
+
+# Copy everything else and build
+COPY . "dotnet_core_boilerplate/"
+
+# Switch to the directory containing the project file if it's in a subdirectory
+# This step is necessary if your WORKDIR isn't directly where your csproj file is.
+WORKDIR "dotnet_core_boilerplate/"
+
+# Note: You can opt to run `dotnet build` here, but it's not strictly necessary
+# since `dotnet watch run` will also build the project.
+
+# Expose the ports the app runs on
+EXPOSE 80
+EXPOSE 443
+
+RUN ls
+
+# Use dotnet watch command to run the app. Adjust as necessary for your app's URLs.
+# The "--urls" argument is optional and depends on your application's requirements.
+ENTRYPOINT ["dotnet", "watch", "run", "--urls", "http://+:80"]

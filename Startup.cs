@@ -1,3 +1,5 @@
+using dotnet_core_boilerplate.StartUpExtensions;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.OpenApi.Models;
 
 namespace dotnet_core_boilerplate;
@@ -5,8 +7,8 @@ namespace dotnet_core_boilerplate;
 public class Startup
 {
     private readonly IConfiguration _configuration;
-    
-    
+
+
     public Startup(IConfiguration configuration)
     {
         _configuration = configuration;
@@ -22,24 +24,26 @@ public class Startup
         {
             c.SwaggerDoc("v1", new OpenApiInfo { Title = "My boilerplate c# project", Version = "v1" });
         });
+        services.ConfigureDependencyInjection(_configuration);
+        services.AddIdentity<AppUser,IdentityRole>().AddEntityFrameworkStores<DbContext>()
+            .AddDefaultTokenProviders();
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseHttpsRedirection();
-        
+
         app.UseSwagger();
 
         // Enable middleware to serve Swagger-ui (HTML, JS, CSS, etc.),
         // specifying the Swagger JSON endpoint
         app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AUTH"));
 
-        
+
         app.UseRouting();
+        app.UseAuthentication();
+
         app.UseAuthorization();
-        app.UseEndpoints(endpoints =>
-        {
-            endpoints.MapControllers();
-        });
+        app.UseEndpoints(endpoints => { endpoints.MapControllers(); });
     }
 }

@@ -1,5 +1,8 @@
+using System.Text;
 using dotnet_core_boilerplate.StartUpExtensions;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 
 namespace dotnet_core_boilerplate;
@@ -27,6 +30,25 @@ public class Startup
         services.ConfigureDependencyInjection(_configuration);
         services.AddIdentity<AppUser,IdentityRole>().AddEntityFrameworkStores<DbContext>()
             .AddDefaultTokenProviders();
+        services.AddAuthentication(opt=>{
+            opt.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
+            opt.DefaultScheme = JwtBearerDefaults.AuthenticationScheme;
+        }).AddJwtBearer(opt=>{
+            opt.SaveToken = true;
+            opt.RequireHttpsMetadata = false;
+            opt.TokenValidationParameters = new TokenValidationParameters
+            {
+                ValidateIssuer = true,
+                ValidateAudience = true,
+                ValidateLifetime =true,
+                ValidateIssuerSigningKey = true,
+                ValidAudience  = _configuration.GetSection("JWTSetting")["ValidAudience"],
+                ValidIssuer= _configuration.GetSection("JWTSetting")["ValidIssuer"],
+                IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration.GetSection("JWTSetting")["securityKey"]!))
+            };
+        });
+
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)

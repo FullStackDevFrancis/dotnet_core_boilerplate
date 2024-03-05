@@ -1,3 +1,5 @@
+using Microsoft.OpenApi.Models;
+
 namespace dotnet_core_boilerplate;
 
 public class Startup
@@ -16,14 +18,24 @@ public class Startup
         Console.WriteLine("configuring services");
         services.AddControllers();
         services.AddEndpointsApiExplorer();
-        services.AddSwaggerGen();
+        services.AddSwaggerGen(c =>
+        {
+            c.SwaggerDoc("v1", new OpenApiInfo { Title = "My boilerplate c# project", Version = "v1" });
+        });
     }
 
     public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
     {
         app.UseHttpsRedirection();
-        app.UseRouting();
+        
+        app.UseSwagger();
 
+        // Enable middleware to serve Swagger-ui (HTML, JS, CSS, etc.),
+        // specifying the Swagger JSON endpoint
+        app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "AUTH"));
+
+        
+        app.UseRouting();
         app.UseAuthorization();
         app.UseEndpoints(endpoints =>
         {
